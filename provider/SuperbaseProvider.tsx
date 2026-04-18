@@ -5,6 +5,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 
 import { Database } from "@/type_db";
+import { hasSupabaseEnv } from "@/libs/env";
 
 interface SupabaseProviderProps {
   children: React.ReactNode;
@@ -13,6 +14,10 @@ interface SupabaseProviderProps {
 const SupabaseProvider: React.FC<SupabaseProviderProps> = ({
   children
 }) => {
+  if (!hasSupabaseEnv) {
+    return <>{children}</>;
+  }
+
     const [supabaseClient] = useState(() =>
     createClientComponentClient<Database>()
   );
