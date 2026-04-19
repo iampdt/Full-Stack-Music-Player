@@ -20,6 +20,7 @@ const AuthModal = () => {
   const router = useRouter();
   const { onClose, isOpen } = useAuthModal();
   const [providers, setProviders] = useState<SocialProvider[]>([]);
+  const [oauthRedirectTo, setOauthRedirectTo] = useState<string | undefined>(undefined);
   
   const supabaseClient = useSupabaseClient();
 
@@ -29,6 +30,12 @@ const AuthModal = () => {
       onClose();
     }
   }, [session, router, onClose]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setOauthRedirectTo(`${window.location.origin}/`);
+    }
+  }, []);
 
   useEffect(() => {
     const requestedProviders: SocialProvider[] = [];
@@ -109,6 +116,7 @@ const AuthModal = () => {
       <Auth
         supabaseClient={supabaseClient}
         providers={providers}
+        redirectTo={oauthRedirectTo}
         magicLink={false}
         appearance={{
           theme: ThemeSupa,
