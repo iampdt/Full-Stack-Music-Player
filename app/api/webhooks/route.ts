@@ -6,7 +6,8 @@ import { stripe } from '@/libs/stripe';
 import {
   upsertProductRecord,
   upsertPriceRecord,
-  manageSubscriptionStatusChange
+  manageSubscriptionStatusChange,
+  supabaseAdmin
 } from '@/libs/supabaseAdmin';
 
 const relevantEvents = new Set([
@@ -32,7 +33,9 @@ export async function POST(
     let event: Stripe.Event;
 
     try {
-      if (!sig || !webhookSecret) return;
+      if (!sig || !webhookSecret) {
+        return new NextResponse('Missing Stripe signature or webhook secret', { status: 400 });
+      }
       event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
     } catch (err: any) {
       console.log(`❌ Error message: ${err.message}`);
@@ -64,6 +67,20 @@ export async function POST(
           const checkoutSession = event.data
             .object as Stripe.Checkout.Session;
           if (checkoutSession.mode === 'subscription') {
+            if (
+              checkoutSession.client_reference_id &&
+              typeof checkoutSession.customer === 'string'
+            ) {
+              await supabaseAdmin
+                .from('customers')
+                .upsert([
+                  {
+                    id: checkoutSession.client_reference_id,
+                    stripe_customer_id: checkoutSession.customer,
+                  },
+                ]);
+            }
+
             const subscriptionId = checkoutSession.subscription;
             await manageSubscriptionStatusChange(
               subscriptionId as string,

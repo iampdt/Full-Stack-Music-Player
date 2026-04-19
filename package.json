@@ -4,9 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:clean": "pkill -f 'next dev' || true; pkill -f 'next/dist/compiled/jest-worker/processChild.js' || true; rm -rf .next",
+    "dev:fresh": "npm run dev:clean && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:reset:seed": "psql \"$SUPABASE_DB_URL\" -f scripts/reset_and_seed.sql",
+    "stripe:check": "node scripts/check_stripe_config.mjs",
+    "stripe:sync:catalog": "node scripts/sync_stripe_catalog.mjs",
+    "stripe:doctor": "npm run stripe:check && npm run stripe:sync:catalog",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhooks"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.0.4",

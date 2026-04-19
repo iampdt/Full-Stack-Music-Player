@@ -36,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({
     player.reset();
     router.refresh();
 
-    if (error) {
+    if (error && (error as any)?.status !== 403) {
       toast.error(error.message);
     }
   }

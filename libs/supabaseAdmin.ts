@@ -109,7 +109,10 @@ const manageSubscriptionStatusChange = async (
     .select('id')
     .eq('stripe_customer_id', customerId)
     .single();
-  if (noCustomerError) throw noCustomerError;
+  if (noCustomerError) {
+    console.log(`No customer mapping found for Stripe customer: ${customerId}`);
+    return;
+  }
 
   const { id: uuid } = customerData!;
 

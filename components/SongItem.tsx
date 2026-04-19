@@ -78,7 +78,12 @@ const SongItem: React.FC<SongItemProps> = ({
           right-5
         "
       >
-        <PlayButton />
+        <PlayButton
+          onClick={(event) => {
+            event.stopPropagation();
+            onClick(data.id);
+          }}
+        />
       </div>
     </div>
    );

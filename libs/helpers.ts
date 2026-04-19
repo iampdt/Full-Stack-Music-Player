@@ -17,7 +17,7 @@ export const postData = async ({
   data
 }: {
   url: string;
-  data?: { price: Price };
+  data?: { price?: Price };
 }) => {
   console.log('posting,', url, data);
 
@@ -29,9 +29,9 @@ export const postData = async ({
   });
 
   if (!res.ok) {
+    const message = await res.text();
     console.log('Error in postData', { url, data, res });
-
-    throw Error(res.statusText);
+    throw Error(message || res.statusText);
   }
 
   return res.json();

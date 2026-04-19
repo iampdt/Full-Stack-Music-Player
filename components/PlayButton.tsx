@@ -1,8 +1,15 @@
+import { MouseEventHandler } from "react";
 import { FaPlay } from "react-icons/fa";
 
-const PlayButton = () => {
+interface PlayButtonProps {
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+}
+
+const PlayButton: React.FC<PlayButtonProps> = ({ onClick }) => {
   return ( 
     <button
+      type="button"
+      onClick={onClick}
       className="
         transition 
         opacity-0 

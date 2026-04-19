@@ -18,7 +18,7 @@ const SupabaseProvider: React.FC<SupabaseProviderProps> = ({
     return <>{children}</>;
   }
 
-    const [supabaseClient] = useState(() =>
+  const [supabaseClient] = useState(() =>
     createClientComponentClient<Database>()
   );
 

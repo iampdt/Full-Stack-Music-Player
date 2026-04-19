@@ -54,6 +54,17 @@ const UploadModal = () => {
         return;
       }
 
+      const ensureUserResponse = await fetch('/api/ensure-user', {
+        method: 'POST',
+        headers: new Headers({ 'Content-Type': 'application/json' }),
+        credentials: 'same-origin'
+      });
+
+      if (!ensureUserResponse.ok) {
+        const errorMessage = await ensureUserResponse.text();
+        return toast.error(errorMessage || 'Could not prepare user profile');
+      }
+
       const uniqueID = uniqid();
 
       // Upload song

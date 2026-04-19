@@ -32,6 +32,9 @@ const SubscribeModal: React.FC<SubscribeModalProps> = ({
 }) => {
   const subscribeModal = useSubscribeModal();
   const { user, isLoading, subscription } = useUser();
+  const paymentLink =
+    process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK ||
+    'https://buy.stripe.com/test_6oU7sLgsq2LB37g2cDbwk00';
 
   const [priceIdLoading, setPriceIdLoading] = useState<string>();
 
@@ -54,6 +57,31 @@ const SubscribeModal: React.FC<SubscribeModalProps> = ({
     }
 
     try {
+      const syncResult = await postData({
+        url: '/api/sync-subscription'
+      });
+
+      if (syncResult?.hasActive) {
+        subscribeModal.onClose();
+        toast.success('Premium is active on your account.');
+        window.location.assign('/account');
+        return;
+      }
+
+      // If a payment link is configured, send the logged-in user's id/email so
+      // webhook handlers can map the Stripe customer back to Supabase user.
+      if (paymentLink) {
+        const checkoutUrl = new URL(paymentLink);
+        checkoutUrl.searchParams.set('client_reference_id', user.id);
+
+        if (user.email) {
+          checkoutUrl.searchParams.set('prefilled_email', user.email);
+        }
+
+        window.location.assign(checkoutUrl.toString());
+        return;
+      }
+
       const { sessionId } = await postData({
         url: '/api/create-checkout-session',
         data: { price }
