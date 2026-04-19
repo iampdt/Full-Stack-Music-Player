@@ -11,13 +11,14 @@ import Player from '@/components/Player'
 import Footer from '@/components/Footer'
 
 import './globals.css'
+import type { Metadata } from 'next'
 
 const font = Figtree({ subsets: ['latin'] })
 
-export const metadata = {
-  title: 'Spotify Clone',
-  description: 'Spotify Clone',
-} 
+export const metadata: Metadata = {
+  title: 'Musify',
+  description: 'Musify - Stream and discover music',
+}
 
 export const revalidate = 0;
 
