@@ -257,10 +257,12 @@ What is included in this repository:
 ### Setup Steps
 
 1. Add WARMUP_TOKEN to your deployment environment (for example, Vercel).
-2. In GitHub repository settings, add these secrets:
-	- WARMUP_ENDPOINT (for example: https://your-domain.com/api/warmup)
+2. In GitHub repository settings, add this secret:
 	- WARMUP_TOKEN (same value as deployment env)
 3. Push to main and verify the workflow run in Actions tab.
+
+The workflow is configured to call https://iampdt.vercel.app/api/warmup.
+If your domain changes, update the endpoint in .github/workflows/keep-supabase-warm.yml.
 
 The workflow runs every 12 hours and can also be started manually with workflow_dispatch.
 

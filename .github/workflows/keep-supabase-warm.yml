@@ -13,14 +13,14 @@ jobs:
     steps:
       - name: Call warmup endpoint
         env:
-          WARMUP_ENDPOINT: ${{ secrets.WARMUP_ENDPOINT }}
+          WARMUP_ENDPOINT: https://iampdt.vercel.app/api/warmup
           WARMUP_TOKEN: ${{ secrets.WARMUP_TOKEN }}
         run: |
-          if [ -z "$WARMUP_ENDPOINT" ] || [ -z "$WARMUP_TOKEN" ]; then
-            echo "Missing WARMUP_ENDPOINT or WARMUP_TOKEN secret."
+          if [ -z "$WARMUP_TOKEN" ]; then
+            echo "Missing WARMUP_TOKEN secret."
             exit 1
           fi
 
-          curl --fail --show-error --silent \
+          curl --retry 3 --retry-all-errors --fail --show-error --silent \
             --header "x-warmup-token: $WARMUP_TOKEN" \
             "$WARMUP_ENDPOINT"
