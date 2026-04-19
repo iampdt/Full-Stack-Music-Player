@@ -13,11 +13,13 @@ import useAuthModal from "@/hooks/useAuthModal";
 
 import Modal from './Modal';
 
+type SocialProvider = 'google' | 'apple' | 'github';
+
 const AuthModal = () => {
   const { session } = useSessionContext();
   const router = useRouter();
   const { onClose, isOpen } = useAuthModal();
-  const [providers, setProviders] = useState<Array<'google' | 'apple'>>([]);
+  const [providers, setProviders] = useState<SocialProvider[]>([]);
   
   const supabaseClient = useSupabaseClient();
 
@@ -29,7 +31,7 @@ const AuthModal = () => {
   }, [session, router, onClose]);
 
   useEffect(() => {
-    const requestedProviders: Array<'google' | 'apple'> = [];
+    const requestedProviders: SocialProvider[] = [];
 
     if (process.env.NEXT_PUBLIC_ENABLE_GOOGLE_AUTH === 'true') {
       requestedProviders.push('google');
@@ -37,6 +39,10 @@ const AuthModal = () => {
 
     if (process.env.NEXT_PUBLIC_ENABLE_APPLE_AUTH === 'true') {
       requestedProviders.push('apple');
+    }
+
+    if (process.env.NEXT_PUBLIC_ENABLE_GITHUB_AUTH === 'true') {
+      requestedProviders.push('github');
     }
 
     if (!requestedProviders.length) {
