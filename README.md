@@ -24,6 +24,7 @@ This project supports:
 - Supabase Setup
 - Scripts
 - Deployment (Vercel)
+- Free Tier Warmup Automation
 - Troubleshooting
 - Security Notes
 
@@ -150,6 +151,7 @@ NEXT_PUBLIC_VERCEL_URL=
 NEXT_PUBLIC_ENABLE_GOOGLE_AUTH=false
 NEXT_PUBLIC_ENABLE_APPLE_AUTH=false
 NEXT_PUBLIC_ENABLE_GITHUB_AUTH=false
+WARMUP_TOKEN=
 ```
 
 ## Local Development
@@ -242,6 +244,25 @@ Important:
 - Vercel does not read your local .env.local automatically.
 - After adding missing env vars, trigger a fresh redeploy.
 - If a deployment failed due to env mismatch, redeploy once with cache disabled.
+
+## Free Tier Warmup Automation
+
+If you are using Supabase free tier, you can keep your project active by pinging a protected warmup endpoint from GitHub Actions.
+
+What is included in this repository:
+
+- Warmup endpoint: app/api/warmup/route.ts
+- Scheduler workflow: .github/workflows/keep-supabase-warm.yml
+
+### Setup Steps
+
+1. Add WARMUP_TOKEN to your deployment environment (for example, Vercel).
+2. In GitHub repository settings, add these secrets:
+	- WARMUP_ENDPOINT (for example: https://your-domain.com/api/warmup)
+	- WARMUP_TOKEN (same value as deployment env)
+3. Push to main and verify the workflow run in Actions tab.
+
+The workflow runs every 12 hours and can also be started manually with workflow_dispatch.
 
 ## Troubleshooting
 
