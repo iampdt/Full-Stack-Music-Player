@@ -11,16 +11,38 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - name: Check warmup secret
+        id: secret_check
+        env:
+          WARMUP_TOKEN: ${{ secrets.WARMUP_TOKEN }}
+        run: |
+          if [ -n "$WARMUP_TOKEN" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::WARMUP_TOKEN secret is missing. Skipping warmup request."
+          fi
+
       - name: Call warmup endpoint
+        if: steps.secret_check.outputs.has_token == 'true'
         env:
           WARMUP_ENDPOINT: https://iampdt.vercel.app/api/warmup
           WARMUP_TOKEN: ${{ secrets.WARMUP_TOKEN }}
         run: |
-          if [ -z "$WARMUP_TOKEN" ]; then
-            echo "Missing WARMUP_TOKEN secret."
-            exit 1
+          status_code=$(curl --retry 3 --retry-all-errors --show-error --silent \
+            --output /tmp/warmup-response.txt \
+            --write-out "%{http_code}" \
+            --header "x-warmup-token: $WARMUP_TOKEN" \
+            "$WARMUP_ENDPOINT" || echo "000")
+
+          if [ "$status_code" -ge 200 ] && [ "$status_code" -lt 300 ]; then
+            echo "Warmup successful (HTTP $status_code)."
+            exit 0
           fi
 
-          curl --retry 3 --retry-all-errors --fail --show-error --silent \
-            --header "x-warmup-token: $WARMUP_TOKEN" \
-            "$WARMUP_ENDPOINT"
+          echo "::warning::Warmup request returned HTTP $status_code. Check WARMUP_TOKEN and endpoint settings."
+
+          if [ -s /tmp/warmup-response.txt ]; then
+            echo "Response body:"
+            cat /tmp/warmup-response.txt
+          fi
