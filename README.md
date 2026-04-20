@@ -134,7 +134,7 @@ npm install
 2. Configure environment:
 
 ```bash
-cp .env.example .env.local
+.env.local
 ```
 
 3. Start development server:
