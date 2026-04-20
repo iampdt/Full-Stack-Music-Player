@@ -9,7 +9,7 @@ This project supports:
 - Premium-gated uploads
 - Subscription billing with Stripe
 - Liked songs per user
-- Runtime auth provider controls (Google, Apple, and GitHub)
+- Runtime auth provider controls (Google and GitHub)
 
 ## Table of Contents
 
