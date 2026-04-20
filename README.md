@@ -123,37 +123,6 @@ Storage buckets:
 - songs (audio files)
 - images (cover art)
 
-## Environment Variables
-
-Copy values from .env.example into your local .env.local.
-
-Required core variables:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
-```
-
-Optional variables:
-
-```env
-SUPABASE_DB_URL=
-NEXT_PUBLIC_STRIPE_PAYMENT_LINK=
-STRIPE_WEBHOOK_SECRET_LIVE=
-NEXT_PUBLIC_VERCEL_URL=
-NEXT_PUBLIC_ENABLE_GOOGLE_AUTH=false
-NEXT_PUBLIC_ENABLE_APPLE_AUTH=false
-NEXT_PUBLIC_ENABLE_GITHUB_AUTH=false
-WARMUP_TOKEN=
-```
-
 ## Local Development
 
 1. Install dependencies:
@@ -201,19 +170,6 @@ npm run stripe:listen
 npm run stripe:doctor
 ```
 
-## Supabase Setup
-
-1. Create project and set URL and keys in env variables.
-2. Ensure tables match type_db.ts schema.
-3. Ensure buckets exist and are accessible for app flow:
-	- songs
-	- images
-4. Configure Auth providers in Supabase Dashboard:
-	- Enable Google if using NEXT_PUBLIC_ENABLE_GOOGLE_AUTH=true
-	- Enable Apple if using NEXT_PUBLIC_ENABLE_APPLE_AUTH=true
-	- Enable GitHub if using NEXT_PUBLIC_ENABLE_GITHUB_AUTH=true
-5. Configure Auth URL settings (Site URL and redirect URLs) for your local and deployed domains.
-
 ## Scripts
 
 Available npm scripts:
@@ -230,77 +186,5 @@ Available npm scripts:
 - npm run stripe:doctor
 - npm run stripe:listen
 
-## Deployment (Vercel)
 
-1. Connect repository to Vercel.
-2. Add all required environment variables in Vercel Project Settings.
-3. Ensure variables are set for the correct scope:
-	- Production
-	- Preview (if needed)
-4. Deploy from main.
-
-Important:
-
-- Vercel does not read your local .env.local automatically.
-- After adding missing env vars, trigger a fresh redeploy.
-- If a deployment failed due to env mismatch, redeploy once with cache disabled.
-
-## Free Tier Warmup Automation
-
-If you are using Supabase free tier, you can keep your project active by pinging a protected warmup endpoint from GitHub Actions.
-
-What is included in this repository:
-
-- Warmup endpoint: app/api/warmup/route.ts
-- Scheduler workflow: .github/workflows/keep-supabase-warm.yml
-
-### Setup Steps
-
-1. Add WARMUP_TOKEN to your deployment environment (for example, Vercel).
-2. In GitHub repository settings, add this secret:
-	- WARMUP_TOKEN (same value as deployment env)
-3. Push to main and verify the workflow run in Actions tab.
-
-The workflow is configured to call https://iampdt.vercel.app/api/warmup.
-If your domain changes, update the endpoint in .github/workflows/keep-supabase-warm.yml.
-
-The workflow runs every 12 hours and can also be started manually with workflow_dispatch.
-
-## Troubleshooting
-
-### Build error: supabaseUrl is required
-
-- Cause: NEXT_PUBLIC_SUPABASE_URL missing in Vercel environment for the target scope.
-- Fix: add NEXT_PUBLIC_SUPABASE_URL and redeploy.
-
-### No active plan after successful Stripe payment
-
-- Cause: Stripe customer mapping mismatch or delayed webhook.
-- Fix: use /api/sync-subscription fallback flow and verify customer mapping in customers table.
-
-### Upload fails with songs_user_id_fkey
-
-- Cause: user row missing in public.users.
-- Fix: ensure-user route and user backfill logic are included and deployed.
-
-### Google login button does not appear
-
-- Verify NEXT_PUBLIC_ENABLE_GOOGLE_AUTH=true in frontend env.
-- Verify Supabase external.google is enabled.
-- Verify redirect URLs and OAuth app callback settings.
-
-### GitHub login button does not appear
-
-- Verify NEXT_PUBLIC_ENABLE_GITHUB_AUTH=true in frontend env.
-- Verify Supabase external.github is enabled.
-- Verify redirect URLs and GitHub OAuth app callback settings.
-
-## Security Notes
-
-- Never commit real secrets.
-- Rotate secrets immediately if exposed:
-  - SUPABASE_SERVICE_ROLE_KEY
-  - STRIPE_SECRET_KEY
-  - STRIPE_WEBHOOK_SECRET
-- Keep production and test Stripe keys strictly separated.
 
