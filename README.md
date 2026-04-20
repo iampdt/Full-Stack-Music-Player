@@ -170,21 +170,6 @@ npm run stripe:listen
 npm run stripe:doctor
 ```
 
-## Scripts
-
-Available npm scripts:
-
-- npm run dev
-- npm run dev:clean
-- npm run dev:fresh
-- npm run build
-- npm run start
-- npm run lint
-- npm run db:reset:seed
-- npm run stripe:check
-- npm run stripe:sync:catalog
-- npm run stripe:doctor
-- npm run stripe:listen
 
 
 
